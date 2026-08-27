@@ -17,7 +17,3 @@
 6. Sign in and open `/admin`.
 
 No new Vercel environment variables are required. Existing `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` remain unchanged.
-
-## Official Seed Database v1
-Run `supabase/v0.4-seed-official-suppliers.sql` after the admin notification migration.
-It adds source/verification metadata and a first nationwide verified batch from official Toyota Saudi Arabia, ABB Saudi Arabia and Schneider Electric directories. The seed intentionally avoids storing personal employee mobile numbers. Records older than 180 days are exposed through `suppliers_needing_reverification` for admin review.

@@ -1,13 +1,13 @@
 'use client'
 
-import { FormEvent, useEffect, useState } from 'react'
+import { FormEvent, Suspense, useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useRouter, useSearchParams } from 'next/navigation'
 
 type City = { id:number; name_ar:string; region_ar:string | null }
 type Category = { id:number; name_ar:string }
 
-export default function AskPage() {
+function AskPageContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [userId, setUserId] = useState<string | null>(null)
@@ -130,5 +130,13 @@ export default function AskPage() {
         </div>
       </section>
     </main>
+  )
+}
+
+export default function AskPage() {
+  return (
+    <Suspense fallback={<main className="shell"><div className="container section">جاري التحميل...</div></main>}>
+      <AskPageContent />
+    </Suspense>
   )
 }
