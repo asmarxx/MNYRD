@@ -2,13 +2,14 @@
 
 import { FormEvent, useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 
 type City = { id:number; name_ar:string; region_ar:string | null }
 type Category = { id:number; name_ar:string }
 
 export default function AskPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [userId, setUserId] = useState<string | null>(null)
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
@@ -21,9 +22,13 @@ export default function AskPage() {
 
   useEffect(() => {
     async function load() {
+      const q = searchParams.get('q') || ''
+      const requestedCity = searchParams.get('city') || ''
+      setTitle(q)
       const { data: auth } = await supabase.auth.getUser()
       if (!auth.user) {
-        router.replace('/login')
+        const next = `/ask?${searchParams.toString()}`
+        router.replace(`/login?next=${encodeURIComponent(next)}`)
         return
       }
       setUserId(auth.user.id)
@@ -32,11 +37,17 @@ export default function AskPage() {
         supabase.from('cities').select('id,name_ar,region_ar').eq('is_active', true).order('name_ar'),
         supabase.from('categories').select('id,name_ar').eq('is_active', true).order('name_ar')
       ])
-      setCities((cityData ?? []) as City[])
+      const cityRows = (cityData ?? []) as City[]
+      setCities(cityRows)
       setCategories((categoryData ?? []) as Category[])
+
+      if (requestedCity) {
+        const exact = cityRows.find(c => c.name_ar === requestedCity)
+        if (exact) setCityId(String(exact.id))
+      }
     }
     load()
-  }, [router])
+  }, [router, searchParams])
 
   async function submit(e: FormEvent) {
     e.preventDefault()

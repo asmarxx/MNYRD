@@ -2,10 +2,12 @@
 
 import { FormEvent, useState } from 'react'
 import { supabase } from '@/lib/supabase'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 
 export default function LoginPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const nextPath = searchParams.get('next') || '/ask'
   const [mode, setMode] = useState<'login' | 'signup'>('login')
   const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')
@@ -32,12 +34,12 @@ export default function LoginPage() {
       if (error) setMessage(error.message)
       else {
         setMessage('تم إنشاء الحساب بنجاح.')
-        router.push('/ask')
+        router.push(nextPath)
       }
     } else {
       const { error } = await supabase.auth.signInWithPassword({ email, password })
       if (error) setMessage(error.message)
-      else router.push('/ask')
+      else router.push(nextPath)
     }
     setLoading(false)
   }

@@ -20,7 +20,7 @@ export default function RecommendPage() {
 
   useEffect(() => {
     supabase.auth.getUser().then(({data}) => {
-      if (!data.user) router.replace('/login')
+      if (!data.user) router.replace(`/login?next=${encodeURIComponent(`/q/${questionId}/recommend`)}`)
       else setUserId(data.user.id)
     })
   }, [router])
